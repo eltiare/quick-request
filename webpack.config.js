@@ -21,7 +21,9 @@ let config = {
   },
   output: {
     path: path.resolve(__dirname),
-    filename: '[name]'
+    filename: '[name]',
+    library: 'simpleRequest',
+    libraryTarget: 'umd'
   },
   externals: prod ? [ nodeExternals() ] : [],
   plugins: plugins,
@@ -41,8 +43,8 @@ let config = {
             'stage-0'
           ],
           plugins: [
-            "transform-export-extensions",
-            "add-module-exports"
+            "add-module-exports",
+            "transform-export-extensions"
           ]
         },
 
