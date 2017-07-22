@@ -38,9 +38,11 @@ function parseRequestData(opts) {
     switch (opts.method) {
       case 'DELETE':
       case 'GET':
-        return Object.keys(opts.data).map( key =>
-            encodeURIComponent(key) + "=" + encodeURIComponent(opts.data[key])
-          ).join('&');
+        return Object.keys(opts.data).map( key => {
+          if (!opts.data[key] && opts.data[key] !== false && opts.data[key] !== 0 )
+            return;
+          return encodeURIComponent(key) + "=" + encodeURIComponent(opts.data[key]);
+        }).filter( p => p ).join('&');
         break;
       default:
         let data = new FormData();
