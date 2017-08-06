@@ -67,8 +67,6 @@ export default class QuickRequest {
 
 }
 
-console.info(QuickRequest.request);
-
 ['post', 'get', 'put', 'patch', 'delete'].forEach( method => {
   QuickRequest[method] = function(url, data, opts) {
     return this.request({ ... opts, url, data, method });
