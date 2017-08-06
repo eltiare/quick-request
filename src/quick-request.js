@@ -16,7 +16,7 @@ let quickRequest = {
 function setupXHR(opts) {
   let method = opts.method ? opts.method.toUpperCase() : "GET",
     headers = opts.headers || {}, data, url = opts.url,
-    xhr = new XMLHttpRequest();
+    xhr = new XMLHttpRequest(), key, i, keys;
   opts.method = method;
   data = parseRequestData(opts);
   let urlParams = method == "GET" || method == "DELETE";
@@ -25,7 +25,8 @@ function setupXHR(opts) {
     url = url + joiner + data;
   }
   xhr.open(method, url, true, opts.username, opts.password);
-  for (let key in Object.keys(headers))
+  keys = Object.keys(headers);
+  for (i=0; key = keys[i]; i++)
     xhr.setRequestHeader(key, headers[key]);
   if (opts.onProgress) xhr.addEventListener("progress", opts.onProgress);
   return [xhr, method, urlParams ? null : data];
