@@ -57,7 +57,7 @@ export default class QuickRequest {
           break;
         default:
           let data = new FormData();
-          Object.keys(opts.data).forEach( key => data.set(key, opts.data[key]) );
+          Object.keys(opts.data).forEach( key => data.append(key, opts.data[key]) );
           return data;
       }
     } else {
