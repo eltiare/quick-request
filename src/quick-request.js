@@ -1,34 +1,45 @@
+import merge from 'deepmerge';
 
-export default class QuickRequest {
+let defaults = {};
 
-  static request(opts) {
-    let self = this;
+let QuickRequest  = {
+
+  setDefaults(obj) {
+    defaults = merge(defaults, obj);
+  },
+
+  resetDefaults(obj) {
+    defaults = obj || {};
+  },
+
+  request(opts) {
     return new Promise( (resolve, reject) => {
-      let [xhr, method, data] = this.setupXHR(opts);
+      let [xhr, data] = QuickRequest.setupXHR(opts);
       xhr.addEventListener("load", function(evt) {
-        resolve([self.parseResponseData(this), evt]);
+        resolve([QuickRequest.parseResponseData(this), evt]);
       });
       let error = evt => { reject([xhr, evt]); };
       xhr.addEventListener("error", error);
       xhr.addEventListener("abort", error);
       xhr.send(data);
     });
-  }
+  },
 
-  static parseResponseData(xhr) {
+  parseResponseData(xhr) {
     if (xhr.responseType && xhr.response ) return xhr.response;
     if (xhr.responseXML) return xhr.responseXML;
     if (xhr.getResponseHeader("Content-Type").match("application/json")) // A catch for IE
       return JSON.parse(xhr.responseText);
     return xhr.responseText;
-  }
+  },
 
-  static setupXHR(opts) {
+  setupXHR(opts) {
+    opts = merge(defaults, opts);
     let method = opts.method ? opts.method.toUpperCase() : "GET",
       headers = opts.headers || {}, data, url = opts.url,
       xhr = new XMLHttpRequest(), key, i, keys;
     opts.method = method;
-    data = this.parseRequestData(opts);
+    data = QuickRequest.parseRequestData(opts);
     let urlParams = method == "GET" || method == "DELETE";
     if ( urlParams && data ) {
       let joiner = url.match(/\?/) ? '&' : '?';
@@ -39,10 +50,10 @@ export default class QuickRequest {
     for (i=0; key = keys[i]; i++)
       xhr.setRequestHeader(key, headers[key]);
     if (opts.onProgress) xhr.addEventListener("progress", opts.onProgress);
-    return [xhr, method, urlParams ? null : data];
-  }
+    return [xhr, urlParams ? null : data];
+  },
 
-  static parseRequestData(opts) {
+  parseRequestData(opts) {
     if (opts.data instanceof FormData) {
       return opts.data;
     } else if (opts.data && typeof opts.data === "object") {
@@ -65,10 +76,12 @@ export default class QuickRequest {
     }
   }
 
-}
+};
 
 ['post', 'get', 'put', 'patch', 'delete'].forEach( method => {
   QuickRequest[method] = function(url, data, opts) {
-    return this.request({ ... opts, url, data, method });
+    return QuickRequest.request({ ... opts, url, data, method });
   };
 });
+
+export default QuickRequest;

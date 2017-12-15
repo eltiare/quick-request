@@ -1,6 +1,6 @@
 {
   "name": "quick-request",
-  "version": "0.0.7",
+  "version": "0.1.0",
   "description": "Easy promise based HTTP requests for browsers, minimal library",
   "main": "./index.js",
   "license": "MIT",
@@ -22,5 +22,8 @@
   "scripts": {
     "start": "webpack --watch --progress --color",
     "build": "webpack -p"
+  },
+  "dependencies": {
+    "deepmerge": "^2.0.1"
   }
 }
