@@ -67,12 +67,24 @@ let QuickRequest  = {
           }).filter( p => p ).join('&');
           break;
         default:
-          let data = new FormData();
-          Object.keys(opts.data).forEach( key => data.append(key, opts.data[key]) );
-          return data;
+          return QuickRequest.formatRequestData(opts);
       }
     } else {
       return opts.data;
+    }
+  },
+
+  formatRequestData(opts)
+  {
+    switch(opts.sendAs && opts.sendAs.toLowerCase())
+    {
+      case 'json':
+        return JSON.stringify(opts.data);
+      case 'form':
+      default:
+        let data = new FormData();
+        Object.keys(opts.data).forEach( key => data.append(key, opts.data[key]) );
+        return data;
     }
   }
 
