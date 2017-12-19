@@ -2,6 +2,18 @@ import merge from 'deepmerge';
 
 let defaults = {};
 
+export class NetworkError extends Error
+{
+  constructor(xhr, event, message)
+  {
+    super(message);
+    this.xhr = xhr;
+    this.event = event;
+    if (Error.captureStackTrace)
+      Error.captureStackTrace(this, NetworkError);
+  }
+}
+
 let QuickRequest  = {
 
   setDefaults(obj) {
@@ -13,12 +25,18 @@ let QuickRequest  = {
   },
 
   request(opts) {
+    opts = merge(defaults, opts);
     return new Promise( (resolve, reject) => {
       let [xhr, data] = QuickRequest.setupXHR(opts);
       xhr.addEventListener("load", function(evt) {
-        resolve([QuickRequest.parseResponseData(this), evt]);
+        if (opts.raiseOnStatusError && this.status >= 400)
+          reject(new NetworkError(this, null, 'Server returned error response: ' + this.status));
+        else
+          resolve([QuickRequest.parseResponseData(this), evt]);
       });
-      let error = evt => { reject([xhr, evt]); };
+      let error = evt => {
+        reject(new NetworkError(this, evt, 'Request was interrupted'));
+      };
       xhr.addEventListener("error", error);
       xhr.addEventListener("abort", error);
       xhr.send(data);
@@ -34,7 +52,7 @@ let QuickRequest  = {
   },
 
   setupXHR(opts) {
-    opts = merge(defaults, opts);
+
     let method = opts.method ? opts.method.toUpperCase() : "GET",
       headers = opts.headers || {}, data, url = opts.url,
       xhr = new XMLHttpRequest(), key, i, keys;
