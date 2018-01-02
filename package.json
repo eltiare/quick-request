@@ -1,7 +1,7 @@
 {
   "name": "quick-request",
-  "version": "0.2.1",
-  "description": "Easy promise based HTTP requests for browsers, minimal library",
+  "version": "0.3.0",
+  "description": "Quick promise based HTTP requests for browsers, minimal library",
   "main": "./index.js",
   "license": "MIT",
   "devDependencies": {
@@ -20,7 +20,7 @@
     "webpack-node-externals": "^1.6.0"
   },
   "scripts": {
-    "start": "webpack --watch --progress --color",
+    "start": "NODE_ENV=production webpack -p --watch --progress --color",
     "build": "NODE_ENV=production webpack -p"
   },
   "dependencies": {

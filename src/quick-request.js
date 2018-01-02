@@ -25,14 +25,24 @@ let QuickRequest  = {
   },
 
   request(opts) {
+    let data = opts.data; // merge mangles objects like File and FormData!
     opts = merge(defaults, opts);
+    opts.data = data;
     return new Promise( (resolve, reject) => {
       let [xhr, data] = QuickRequest.setupXHR(opts);
+      ['progress', 'loadstart', 'loadend'].forEach( l => {
+        if (opts[l])
+          xhr.addEventListener(l, opts[l]);
+      });
       xhr.addEventListener("load", function(evt) {
         if (opts.raiseOnStatusError && this.status >= 400)
           reject(new NetworkError(this, null, 'Server returned error response: ' + this.status));
         else
-          resolve([QuickRequest.parseResponseData(this), evt]);
+          resolve({
+            data: QuickRequest.parseResponseData(this),
+            event: evt,
+            xhr: xhr
+          });
       });
       let error = evt => {
         reject(new NetworkError(this, evt, 'Request was interrupted'));
@@ -52,7 +62,6 @@ let QuickRequest  = {
   },
 
   setupXHR(opts) {
-
     let method = opts.method ? opts.method.toUpperCase() : "GET",
       headers = opts.headers || {}, data, url = opts.url,
       xhr = new XMLHttpRequest(), key, i, keys;
@@ -67,7 +76,6 @@ let QuickRequest  = {
     keys = Object.keys(headers);
     for (i=0; key = keys[i]; i++)
       xhr.setRequestHeader(key, headers[key]);
-    if (opts.onProgress) xhr.addEventListener("progress", opts.onProgress);
     return [xhr, urlParams ? null : data];
   },
 
