@@ -65,6 +65,7 @@ let QuickRequest  = {
     let method = opts.method ? opts.method.toUpperCase() : "GET",
       headers = opts.headers || {}, data, url = opts.url,
       xhr = new XMLHttpRequest(), key, i, keys;
+    xhr.withCredentials = !! opts.withCredentials;
     opts.method = method;
     data = QuickRequest.parseRequestData(opts);
     let urlParams = method == "GET" || method == "DELETE";

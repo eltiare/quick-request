@@ -1,6 +1,6 @@
 {
   "name": "quick-request",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Quick promise based HTTP requests for browsers, minimal library",
   "main": "./index.js",
   "license": "MIT",
